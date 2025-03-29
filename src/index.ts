@@ -1,4 +1,4 @@
-import { getInput , info, setFailed } from "@actions/core"
+import { getInput , info, setFailed , } from "@actions/core"
 import axios from "axios"
 async function run():Promise<void>{
     try {
@@ -13,3 +13,5 @@ async function run():Promise<void>{
         setFailed(error.message)
     }
 }
+
+run()
