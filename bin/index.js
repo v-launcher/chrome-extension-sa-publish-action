@@ -81,7 +81,7 @@ function run() {
                 query({ uploadType: 'media' }).
                 set({ "Authorization": `Bearer ${token.body.access_token}` }).
                 send(zipFile);
-            (0, core_1.info)(extensionResponse.body.toString());
+            (0, core_1.info)(JSON.stringify(extensionResponse.body));
         }
         catch (error) {
             (0, core_1.setFailed)(error.message);
