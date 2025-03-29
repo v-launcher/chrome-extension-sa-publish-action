@@ -20,8 +20,11 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
         try {
-            const serviceAccount = JSON.parse((0, core_1.getInput)("service-account-json"));
+            const serviceAccount = JSON.parse((0, core_1.getInput)("service-account-json", { required: true }));
             (0, core_1.info)("Email" + serviceAccount.client_email);
+            const folderPath = (0, core_1.getInput)("path", {
+                required: true
+            });
             const now = Math.floor(Date.now() / 1000);
             const payload = {
                 iss: serviceAccount.client_email,
@@ -40,8 +43,12 @@ function run() {
             //     headers: { "Content-Type": "application/x-www-form-urlencoded"}
             // })
             // const extensionId = getInput("chrome-extension-id")
-            const fileList = node_fs_1.default.readdirSync(__dirname);
+            const fileList = node_fs_1.default.readdirSync("./");
             fileList.forEach((fileName) => {
+                (0, core_1.info)(fileName);
+            });
+            const pathFiles = node_fs_1.default.readdirSync(folderPath);
+            pathFiles.forEach((fileName) => {
                 (0, core_1.info)(fileName);
             });
         }

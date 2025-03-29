@@ -10,6 +10,9 @@ inputs:
   chrome-extension-id:
     description: "Chrome extension id"
     required: true
+  path:
+    description: 'Path of the extension'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'

@@ -5,8 +5,11 @@ import fs from "node:fs"
 
 async function run():Promise<void>{
     try {
-        const serviceAccount = JSON.parse(getInput("service-account-json"))
+        const serviceAccount = JSON.parse(getInput("service-account-json",{required: true}))
         info("Email"+serviceAccount.client_email)
+        const folderPath = getInput("path",{
+            required: true
+        })
         const now = Math.floor(Date.now() / 1000);
         const payload = {
             iss: serviceAccount.client_email,
@@ -25,8 +28,12 @@ async function run():Promise<void>{
         //     headers: { "Content-Type": "application/x-www-form-urlencoded"}
         // })
         // const extensionId = getInput("chrome-extension-id")
-        const fileList = fs.readdirSync(__dirname)
+        const fileList = fs.readdirSync("./")
         fileList.forEach((fileName)=>{
+            info(fileName)
+        })
+        const pathFiles = fs.readdirSync(folderPath)
+        pathFiles.forEach((fileName: string)=>{
             info(fileName)
         })
     } catch (error: any) {
