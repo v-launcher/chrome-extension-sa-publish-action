@@ -1,8 +1,14 @@
 name: 'Chrome extension webstore publish'
 description: 'Publish your chrome extension to the chrome webstore using the delgated service account'
 inputs:
-  self-signed-jwt: 
-    description: "Google self signed jwt"
+  service-account-json:
+    description: 'Service account json'
+    required: true
+  impersonated-user-email:
+    description: 'Email of the Impersonated user in the organization'
+    required: true
+  chrome-extension-id:
+    description: "Chrome extension id"
     required: true
 runs:
   using: 'node20'
