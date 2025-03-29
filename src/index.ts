@@ -34,7 +34,7 @@ async function run():Promise<void>{
         query({ uploadType: 'media' }).
         set({"Authorization":`Bearer ${token.body.access_token}`}).
         send(zipFile)
-        info(extensionResponse.body.toString())
+        info(JSON.stringify(extensionResponse.body))
     } catch (error: any) {
         setFailed(error.message)
     }
