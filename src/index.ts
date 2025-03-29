@@ -1,5 +1,5 @@
-import { getInput , info, setFailed , } from "@actions/core"
-import axios from "axios"
+import { getInput , info, setFailed ,error as errorLog } from "@actions/core"
+import axios, { isAxiosError } from "axios"
 async function run():Promise<void>{
     try {
         const requestBody = new URLSearchParams({
@@ -11,7 +11,10 @@ async function run():Promise<void>{
         const response = await axios.post("https://oauth2.googleapis.com/token")
         info(response.data.access_token)
     } catch (error: any) {
-        setFailed(error.message)
+        if (isAxiosError(error)){
+            errorLog(JSON.stringify(error.response?.data))
+            setFailed(error.response?.data)
+        }
     }
 }
 
