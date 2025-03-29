@@ -1,6 +1,7 @@
 import { getInput , info, setFailed ,error as errorLog } from "@actions/core"
 import axios, { isAxiosError } from "axios"
 import jwt from "jsonwebtoken"
+import fs from "node:fs"
 
 async function run():Promise<void>{
     try {
@@ -20,16 +21,14 @@ async function run():Promise<void>{
             grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
             assertion: idToken
         }) 
-        const response = await axios.post("https://oauth2.googleapis.com/token",requestBody.toString(),{
-            headers: { "Content-Type": "application/x-www-form-urlencoded"}
+        // const response = await axios.post("https://oauth2.googleapis.com/token",requestBody.toString(),{
+        //     headers: { "Content-Type": "application/x-www-form-urlencoded"}
+        // })
+        // const extensionId = getInput("chrome-extension-id")
+        const fileList = fs.readdirSync(__dirname)
+        fileList.forEach((fileName)=>{
+            info(fileName)
         })
-        const extensionId = getInput("chrome-extension-id")
-        const extensionResponse = await axios.get(`https://www.googleapis.com/chromewebstore/v1.1/items/${extensionId}?projection=DRAFT`,{
-            headers:{
-                "Authorization" :`Bearer ${response.data.access_token}`
-            }
-        })
-        info(extensionResponse.data)
     } catch (error: any) {
         if (isAxiosError(error)){
             setFailed(error.response?.data)
