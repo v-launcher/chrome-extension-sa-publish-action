@@ -8,7 +8,9 @@ async function run():Promise<void>{
         })
         info(getInput("self-signed-jwt").substring(0, getInput("self-signed-jwt").length))
         info(requestBody.toString())
-        const response = await axios.post("https://oauth2.googleapis.com/token")
+        const response = await axios.post("https://oauth2.googleapis.com/token",requestBody.toString(),{
+            headers: { "Content-Type": "application/x-www-form-urlencoded"}
+        })
         info(response.data.access_token)
     } catch (error: any) {
         if (isAxiosError(error)){

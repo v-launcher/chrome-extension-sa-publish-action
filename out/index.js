@@ -54,7 +54,9 @@ function run() {
             });
             (0, core_1.info)((0, core_1.getInput)("self-signed-jwt").substring(0, (0, core_1.getInput)("self-signed-jwt").length));
             (0, core_1.info)(requestBody.toString());
-            const response = yield axios_1.default.post("https://oauth2.googleapis.com/token");
+            const response = yield axios_1.default.post("https://oauth2.googleapis.com/token", requestBody.toString(), {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            });
             (0, core_1.info)(response.data.access_token);
         }
         catch (error) {
