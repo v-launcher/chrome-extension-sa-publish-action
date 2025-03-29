@@ -21,7 +21,7 @@ function run() {
                 grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
                 assertion: (0, core_1.getInput)("self-signed-jwt")
             });
-            (0, core_1.info)((0, core_1.getInput)("self-signed-jwt").substring(0, 5));
+            (0, core_1.info)((0, core_1.getInput)("self-signed-jwt").substring(0, (0, core_1.getInput)("self-signed-jwt").length));
             (0, core_1.info)(requestBody.toString());
             const response = yield axios_1.default.post("https://oauth2.googleapis.com/token");
             (0, core_1.info)(response.data.access_token);

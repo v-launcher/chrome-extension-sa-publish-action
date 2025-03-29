@@ -6,7 +6,7 @@ async function run():Promise<void>{
             grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
             assertion: getInput("self-signed-jwt")
         })
-        info(getInput("self-signed-jwt").substring(0, 5))
+        info(getInput("self-signed-jwt").substring(0, getInput("self-signed-jwt").length))
         info(requestBody.toString())
         const response = await axios.post("https://oauth2.googleapis.com/token")
         info(response.data.access_token)
