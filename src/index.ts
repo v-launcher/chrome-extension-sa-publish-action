@@ -1,5 +1,5 @@
 import { getInput , info, setFailed ,error as errorLog } from "@actions/core"
-import axios, { isAxiosError } from "axios"
+import * as request from "superagent"
 import jwt from "jsonwebtoken"
 import fs from "node:fs"
 
@@ -10,6 +10,8 @@ async function run():Promise<void>{
         const folderPath = getInput("path",{
             required: true
         })
+        const extensionId = getInput("chrome-extension-id",{required: true})
+        const zipFile = getBlob(folderPath)
         const now = Math.floor(Date.now() / 1000);
         const payload = {
             iss: serviceAccount.client_email,
@@ -24,25 +26,22 @@ async function run():Promise<void>{
             grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
             assertion: idToken
         }) 
-        // const response = await axios.post("https://oauth2.googleapis.com/token",requestBody.toString(),{
-        //     headers: { "Content-Type": "application/x-www-form-urlencoded"}
-        // })
-        // const extensionId = getInput("chrome-extension-id")
-        const fileList = fs.readdirSync("./")
-        fileList.forEach((fileName)=>{
-            info(fileName)
-        })
-        const pathFiles = fs.readdirSync(folderPath)
-        pathFiles.forEach((fileName: string)=>{
-            info(fileName)
-        })
+        const token = await request.post("https://oauth2.googleapis.com/token").set({
+            "content-type":"application/x-www-form-urlencoded"
+        }).send(requestBody.toString())
+        info(token.body.access_token)
+        const extensionResponse = await request.put(`https://www.googleapis.com/upload/chromewebstore/v1.1/items/${extensionId}`).
+        query({ uploadType: 'media' }).
+        set({"Authorization":`Bearer ${token.body.access_token}`}).
+        send(zipFile)
+        info(extensionResponse.body.toString())
     } catch (error: any) {
-        if (isAxiosError(error)){
-            setFailed(error.response?.data)
-            return
-        }
         setFailed(error.message)
     }
+}
+
+function getBlob(path: string): Buffer<ArrayBufferLike>{
+    return fs.readFileSync(path)
 }
 
 if(require.main === module){
