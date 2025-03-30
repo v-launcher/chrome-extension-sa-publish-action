@@ -1,4 +1,4 @@
-import { JWT , AuthClient } from "google-auth-library"
+import { JWT } from "google-auth-library"
 import TGoogleServiceAccount from "../types/TServiceAccount"
 
 export function generateJWT(keyFile: TGoogleServiceAccount , sub: string):JWT {

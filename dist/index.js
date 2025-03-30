@@ -56,6 +56,7 @@ const core_1 = __nccwpck_require__(3063);
 const request = __importStar(__nccwpck_require__(5788));
 const node_fs_1 = __importDefault(__nccwpck_require__(3024));
 const token_1 = __nccwpck_require__(7451);
+const TChromeWebstoreResponse_1 = __nccwpck_require__(9560);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -65,11 +66,7 @@ function run() {
             const delegatedEmil = (0, core_1.getInput)("impersonated-user-email", { required: true });
             const zipFile = getBlob(folderPath);
             const accessTokenRes = yield (0, token_1.generateJWT)(serviceAccount, delegatedEmil).getAccessToken();
-            const extensionResponse = yield request.put(`https://www.googleapis.com/upload/chromewebstore/v1.1/items/${extensionId}`).
-                query({ uploadType: 'media' }).
-                set({ "Authorization": `Bearer ${accessTokenRes.token}` }).
-                send(zipFile);
-            (0, core_1.info)(`${extensionResponse.statusCode}`);
+            yield upload(zipFile, accessTokenRes.token, extensionId);
         }
         catch (error) {
             (0, core_1.setFailed)(error.message);
@@ -79,9 +76,50 @@ function run() {
 function getBlob(path) {
     return node_fs_1.default.readFileSync(path);
 }
+function upload(zip, accessToken, extensionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        try {
+            if (typeof accessToken === "string") {
+                throw Error("Invalid OAuth2 Access Token");
+            }
+            const extensionResponse = yield request.
+                put(`${CHROME_WEBSTORE_BASE_URL}/items/${extensionId}`).
+                query({ uploadType: 'media' }).
+                set({ "Authorization": `Bearer ${accessToken}` }).
+                send(zip);
+            const chromeWebStoreResponse = extensionResponse.body;
+            if (chromeWebStoreResponse.uploadState === TChromeWebstoreResponse_1.UploadState.FAILURE || chromeWebStoreResponse.uploadState === TChromeWebstoreResponse_1.UploadState.NOT_FOUND) {
+                throw new Error(`Failed to upload chrome extension build\nuploadStatus: ${chromeWebStoreResponse.uploadState}\nerrorDetail: ${(_a = chromeWebStoreResponse.itemError.at(0)) === null || _a === void 0 ? void 0 : _a.error_detail}`);
+            }
+            return chromeWebStoreResponse;
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
 if (require.main === require.cache[eval('__filename')]) {
     run();
 }
+
+
+/***/ }),
+
+/***/ 9560:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UploadState = void 0;
+var UploadState;
+(function (UploadState) {
+    UploadState["FAILURE"] = "FAILURE";
+    UploadState["IN_PROGRESS"] = "IN_PROGRESS";
+    UploadState["NOT_FOUND"] = "NOT_FOUND";
+    UploadState["SUCCESS"] = "SUCCESS";
+})(UploadState || (exports.UploadState = UploadState = {}));
 
 
 /***/ }),
