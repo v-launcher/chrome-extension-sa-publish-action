@@ -13,9 +13,6 @@ inputs:
   path:
     description: 'Path of the extension'
     required: true
-  print-token:
-    description: 'sample'
-    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'

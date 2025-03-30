@@ -47,46 +47,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@actions/core");
 const request = __importStar(require("superagent"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fs_1 = __importDefault(require("node:fs"));
+const token_1 = require("./utils/token");
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const serviceAccount = JSON.parse((0, core_1.getInput)("service-account-json", { required: true }));
-            (0, core_1.info)("Email" + serviceAccount.client_email);
-            const folderPath = (0, core_1.getInput)("path", {
-                required: true
-            });
-            const tokenParts = (0, core_1.getInput)("print-token");
-            tokenParts.split(".").forEach((val, index) => {
-                (0, core_1.info)(`${index} - ${val}`);
-            });
+            const folderPath = (0, core_1.getInput)("path", { required: true });
             const extensionId = (0, core_1.getInput)("chrome-extension-id", { required: true });
+            const delegatedEmil = (0, core_1.getInput)("impersonated-user-email", { required: true });
             const zipFile = getBlob(folderPath);
-            const now = Math.floor(Date.now() / 1000);
-            const payload = {
-                iss: serviceAccount.client_email,
-                scope: "https://www.googleapis.com/auth/chromewebstore", // API scope
-                aud: "https://oauth2.googleapis.com/token", // Google token URL
-                exp: now + 3600,
-                iat: now,
-                sub: (0, core_1.getInput)("impersonated-user-email")
-            };
-            const idToken = jsonwebtoken_1.default.sign(payload, serviceAccount.private_key, { algorithm: "RS256" });
-            (0, core_1.info)(`Generated Token ${idToken}`);
-            const requestBody = new URLSearchParams({
-                grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                assertion: idToken
-            });
-            const token = yield request.post("https://oauth2.googleapis.com/token").set({
-                "content-type": "application/x-www-form-urlencoded"
-            }).send(requestBody.toString());
-            (0, core_1.info)(token.body.access_token);
+            const accessTokenRes = yield (0, token_1.generateJWT)(serviceAccount, delegatedEmil).getAccessToken();
             const extensionResponse = yield request.put(`https://www.googleapis.com/upload/chromewebstore/v1.1/items/${extensionId}`).
                 query({ uploadType: 'media' }).
-                set({ "Authorization": `Bearer ${token.body.access_token}` }).
+                set({ "Authorization": `Bearer ${accessTokenRes.token}` }).
                 send(zipFile);
-            (0, core_1.info)(JSON.stringify(extensionResponse.body));
+            (0, core_1.info)(`${extensionResponse.statusCode}`);
         }
         catch (error) {
             (0, core_1.setFailed)(error.message);
