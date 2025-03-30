@@ -1,8 +1,7 @@
 import { getInput, setFailed } from "@actions/core"
-import * as request from "superagent"
 import fs from "node:fs"
 import { generateJWT } from "./utils/token"
-import TChromeWebStoreResponse, { UploadState } from "./types/TChromeWebstoreResponse"
+import upload from "./utils/upload"
 
 async function run():Promise<void>{
     try {
@@ -22,25 +21,6 @@ function getBlob(path: string): Buffer<ArrayBufferLike>{
     return fs.readFileSync(path)
 }
 
-async function upload(zip: Buffer<ArrayBufferLike> , accessToken: string | undefined | null , extensionId: string): Promise<TChromeWebStoreResponse> {
-    try {
-        if (typeof accessToken !== "string") {
-            throw Error("Invalid OAuth2 Access Token")
-        }
-        const extensionResponse = await request.
-        put(`${CHROME_WEBSTORE_BASE_URL}/items/${extensionId}`).
-        query({ uploadType: 'media' }).
-        set({"Authorization":`Bearer ${accessToken}`}).
-        send(zip)
-        const chromeWebStoreResponse = extensionResponse.body as TChromeWebStoreResponse
-        if(chromeWebStoreResponse.uploadState === UploadState.FAILURE || chromeWebStoreResponse.uploadState === UploadState.NOT_FOUND) {
-            throw new Error(`Failed to upload chrome extension build\nuploadStatus: ${chromeWebStoreResponse.uploadState}\nerrorDetail: ${chromeWebStoreResponse.itemError.at(0)?.error_detail}`)
-        }
-        return chromeWebStoreResponse
-    } catch (error) {
-        throw error
-    }
-}
 
 if(require.main === module){
     run()

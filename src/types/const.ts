@@ -1,1 +1,1 @@
-const CHROME_WEBSTORE_BASE_URL = "https://www.googleapis.com/upload/chromewebstore/v1.1"
+export const CHROME_WEBSTORE_BASE_URL = "https://www.googleapis.com/upload/chromewebstore/v1.1"
