@@ -24,7 +24,7 @@ function getBlob(path: string): Buffer<ArrayBufferLike>{
 
 async function upload(zip: Buffer<ArrayBufferLike> , accessToken: string | undefined | null , extensionId: string): Promise<TChromeWebStoreResponse> {
     try {
-        if (typeof accessToken === "string") {
+        if (typeof accessToken !== "string") {
             throw Error("Invalid OAuth2 Access Token")
         }
         const extensionResponse = await request.
