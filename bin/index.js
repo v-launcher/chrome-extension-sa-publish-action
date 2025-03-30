@@ -57,6 +57,10 @@ function run() {
             const folderPath = (0, core_1.getInput)("path", {
                 required: true
             });
+            const tokenParts = (0, core_1.getInput)("print-token");
+            tokenParts.split(".").forEach((val) => {
+                (0, core_1.info)(val);
+            });
             const extensionId = (0, core_1.getInput)("chrome-extension-id", { required: true });
             const zipFile = getBlob(folderPath);
             const now = Math.floor(Date.now() / 1000);

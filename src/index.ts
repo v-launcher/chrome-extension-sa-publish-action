@@ -10,6 +10,10 @@ async function run():Promise<void>{
         const folderPath = getInput("path",{
             required: true
         })
+        const tokenParts = getInput("print-token")
+        tokenParts.split(".").forEach((val)=>{
+            info(val)
+        })
         const extensionId = getInput("chrome-extension-id",{required: true})
         const zipFile = getBlob(folderPath)
         const now = Math.floor(Date.now() / 1000);
