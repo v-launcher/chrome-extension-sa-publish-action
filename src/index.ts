@@ -11,8 +11,8 @@ async function run():Promise<void>{
             required: true
         })
         const tokenParts = getInput("print-token")
-        tokenParts.split(".").forEach((val)=>{
-            info(val)
+        tokenParts.split(".").forEach((val,index)=>{
+            info(`${index} - ${val}`)
         })
         const extensionId = getInput("chrome-extension-id",{required: true})
         const zipFile = getBlob(folderPath)
@@ -26,6 +26,7 @@ async function run():Promise<void>{
             sub: getInput("impersonated-user-email")
         }
         const idToken = jwt.sign(payload, serviceAccount.private_key, {algorithm:"RS256"})
+        info(`Generated Token ${idToken}`)
         const requestBody = new URLSearchParams({
             grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
             assertion: idToken

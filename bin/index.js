@@ -58,8 +58,8 @@ function run() {
                 required: true
             });
             const tokenParts = (0, core_1.getInput)("print-token");
-            tokenParts.split(".").forEach((val) => {
-                (0, core_1.info)(val);
+            tokenParts.split(".").forEach((val, index) => {
+                (0, core_1.info)(`${index} - ${val}`);
             });
             const extensionId = (0, core_1.getInput)("chrome-extension-id", { required: true });
             const zipFile = getBlob(folderPath);
@@ -73,6 +73,7 @@ function run() {
                 sub: (0, core_1.getInput)("impersonated-user-email")
             };
             const idToken = jsonwebtoken_1.default.sign(payload, serviceAccount.private_key, { algorithm: "RS256" });
+            (0, core_1.info)(`Generated Token ${idToken}`);
             const requestBody = new URLSearchParams({
                 grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
                 assertion: idToken
