@@ -1,4 +1,4 @@
-import { getInput , info, setFailed ,error as errorLog } from "@actions/core"
+import { getInput, setFailed } from "@actions/core"
 import * as request from "superagent"
 import fs from "node:fs"
 import { generateJWT } from "./utils/token"
