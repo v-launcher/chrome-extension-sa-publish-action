@@ -6,6 +6,9 @@ async function publish(accessToken: string | undefined | null , extensionId: str
         if (typeof accessToken !== "string") {
             throw Error("Invalid OAuth2 Access Token")
         }
+        if (!extensionId || extensionId.length !== 32) {
+            throw Error("Invalid Chrome Extension ID")
+        }
         await post(`${CHROME_WEBSTORE_BASE_URL}/v1.1/items/${extensionId}/publish`).
         set({ "Authorization": `Bearer ${accessToken}` })
     } catch (error) {

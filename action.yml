@@ -13,6 +13,10 @@ inputs:
   path:
     description: 'Path of the extension'
     required: true
+  auto-publish:
+    description: 'Auto publish the extension after upload'
+    required: false
+    default: "false"
 runs:
   using: 'node20'
   main: 'dist/index.js'
