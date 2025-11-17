@@ -12,6 +12,11 @@ async function run():Promise<void>{
         const zipFile = getBlob(folderPath)
         const accessTokenRes = await generateJWT(serviceAccount,delegatedEmil).getAccessToken()
         await upload(zipFile,accessTokenRes.token,extensionId)
+        const autoPublish = getInput("auto-publish") === "true"
+        if(autoPublish){
+            const publishModule = await import("./utils/publish")
+            await publishModule.default(accessTokenRes.token, extensionId)
+        }
     } catch (error: any) {
         setFailed(error.message)
     }
